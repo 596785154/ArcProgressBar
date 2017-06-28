@@ -1,0 +1,21 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <com.zcn.arcprogressbar.ArcProgressBar
+        android:id="@+id/arcProgressBar"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:visibility="visible">
+    </com.zcn.arcprogressbar.ArcProgressBar>
+    <!--<com.sdkj.myapplication.MySeekBar
+        android:id="@+id/seekBar"
+        android:layout_below="@+id/arcProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="visible">
+    </com.sdkj.myapplication.MySeekBar>-->
+
+
+</RelativeLayout>
