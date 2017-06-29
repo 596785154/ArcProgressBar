@@ -13,6 +13,7 @@ import android.graphics.Point;
 import android.graphics.Paint.Style;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -25,10 +26,6 @@ public class ArcProgressBar extends View {
     private float sweepAngle = 180.0f;
     private float bgThickness = 30;//北京弧形条的厚度，即bgPaint的粗度
     private float fgThickness = 26;
-
-    //private float angleUnit = 180.0f / 256.0f;
-    private float angleUnit = 10f;
-    private RectF rect;
 
     /** The width of the view */
     private int width;
@@ -43,12 +40,18 @@ public class ArcProgressBar extends View {
     /** The radius of the inner circle */
     private float innerRadius;
     /** The maximum progress amount */
-    private int maxProgress = 100;
-    private int progress = 50;
+    private int maxProgress = 5;
+    //private int progress = 3;
     float left=20.0f;//Rect 左X坐标
     float right=420.0f;//Rect 右X坐标
     float top=20f;
     float bottom=420f;
+    int progress = 3;
+    int i = 0;
+
+    //private float angleUnit = 180.0f / 256.0f;
+    private float angleUnit  = 180/maxProgress;;
+    private RectF rect;
 
 
 
@@ -88,6 +91,16 @@ public class ArcProgressBar extends View {
      */
     public void setMaxProgress(int maxProgress) {
         this.maxProgress = maxProgress;
+        angleUnit = 180/maxProgress;
+    }
+
+    public int getProgress() {
+        return progress;
+    }
+
+    public void setProgress(int progress) {
+
+        this.progress = progress;
     }
 
 
@@ -115,7 +128,6 @@ public class ArcProgressBar extends View {
         BlurMaskFilter blurMaskFilter3 = new BlurMaskFilter(1, Blur.OUTER);
         fgPaint.setMaskFilter(blurMaskFilter3);
 
-        j = 180 * progress / maxProgress;
     }
 
     @Override
@@ -136,12 +148,15 @@ public class ArcProgressBar extends View {
         cy = height / 2; // Center Y for circle
         outerRadius = (size / 2)-30; // Radius of the outer circle / 2;
         innerRadius = outerRadius - bgThickness/2;//outRadious是向内外扩展
-        System.out.println("Chunna.zheng==="+outerRadius+" "+bgThickness+" "+innerRadius);
+        Log.d("Chunna.zheng==", outerRadius + " " + bgThickness + " " + innerRadius);
 
         left = cx - outerRadius; // Calculate left bound of our rect
         right = cx + outerRadius;// Calculate right bound of our rect
         top = cy - outerRadius;// Calculate top bound of our rect
         bottom = cy + outerRadius;// Calculate bottom bound of our rect
+
+        Log.d("Chunna.zheng", "请输出maxProgress的值：" + maxProgress);
+        Log.d("Chunna.zheng", "请输出progress的值：" + progress);
 
         //在此矩形中画弧形进度条
         rect = new RectF(left, top, right, bottom);
@@ -169,23 +184,19 @@ public class ArcProgressBar extends View {
         drawFg(canvas);
     }
 
-    int j = 0;
-    int i = 0;
-
     /**
      * 画Foreground
      * @param canvas
      */
     private void drawFg(Canvas canvas) {
-        angleUnit = 180/maxProgress;
-//		System.out.println("x:"+x);
-//		System.out.println("j:"+j);
-        for(i=0;i<j;i++){
+        Log.d("Chunna.zheng","开始绘画了");
+        for(i=0;i< progress;i++){
+            Log.d("Chunna.zheng","进入循环体："+i);
             //fgPaint.setColor(Color.rgb(i, 256 - i, 0));
             fgPaint.setColor(Color.parseColor("#ff33b5e5"));
             canvas.drawArc(rect, 180 + angleUnit * i, angleUnit, false, fgPaint);
         }
-//		invalidate();
+
     }
 
     float coordinateUnit=256/(right-left);
@@ -208,10 +219,13 @@ public class ArcProgressBar extends View {
                 degree = Math.toDegrees(Math.atan((y - centerPoint.y)
                         / (x - centerPoint.x)));
                 if(degree>=0){
-                    j=(int)(degree/angleUnit);
+                    progress =(int) Math.round(degree/angleUnit);
                 }else{
-                    j=(int)((180+degree)/angleUnit);
+                    progress =(int) Math.round((180+degree)/angleUnit);
                 }
+                Log.d("Chunna.zheng", "输出ACTION_DOWN中degree值：" + degree);
+                Log.d("Chunna.zheng","输出ACTION_DOWN中angleUnit值："+angleUnit);
+                Log.d("Chunna.zheng","输出ACTION_DOWN中progress值："+progress);
                 invalidate();
 
                 break;
@@ -227,10 +241,13 @@ public class ArcProgressBar extends View {
                         / (x - centerPoint.x)));
 
                 if(degree>=0){
-                    j=(int)(degree/angleUnit);
+                    progress =(int) Math.round(degree/angleUnit);
                 }else{
-                    j=(int)((180+degree)/angleUnit);
+                    progress = (int) Math.round((180+degree)/angleUnit);
                 }
+                Log.d("Chunna.zheng","输出ACTION_MOVE中degree值："+degree);
+                Log.d("Chunna.zheng","输出ACTION_MOVE中angleUnit值："+angleUnit);
+                Log.d("Chunna.zheng","输出ACTION_MOVE中progress值："+progress);
                 invalidate();
                 break;
         }
@@ -238,3 +255,4 @@ public class ArcProgressBar extends View {
         return true;
     }
 }
+
