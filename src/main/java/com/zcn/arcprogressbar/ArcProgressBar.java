@@ -12,6 +12,8 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Paint.Style;
 import android.graphics.RectF;
+import android.graphics.Shader;
+import android.graphics.SweepGradient;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -121,7 +123,9 @@ public class ArcProgressBar extends View {
         innerPaint = new Paint();
         innerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         innerPaint.setStyle(Paint.Style.FILL);
-        innerPaint.setColor(Color.BLACK);
+        int[] colors = new int[]{Color.parseColor("#d2d3d2"),Color.parseColor("#6f6f6f"),Color.parseColor("#414242")};
+        Shader shader = new SweepGradient(160,160,colors,null);
+        innerPaint.setShader(shader);
         BlurMaskFilter blurMaskFilter2 = new BlurMaskFilter(1, Blur.OUTER);
         innerPaint.setMaskFilter(blurMaskFilter2);
 
@@ -130,6 +134,7 @@ public class ArcProgressBar extends View {
         fgPaint.setStyle(Style.STROKE);
         fgPaint.setStrokeWidth(fgThickness);
         fgPaint.setColor(Color.parseColor("#71dca2"));
+        fgPaint.setStrokeCap(Paint.Cap.ROUND);
         BlurMaskFilter blurMaskFilter3 = new BlurMaskFilter(1, Blur.OUTER);
         fgPaint.setMaskFilter(blurMaskFilter3);
 
@@ -183,7 +188,7 @@ public class ArcProgressBar extends View {
 		 * false  不画中心和弧线的连线
 		 */
         canvas.drawCircle(cx, cy, outerRadius, outerPaint);
-        //canvas.drawCircle(cx, cy, innerRadius, innerPaint);
+        canvas.drawCircle(cx, cy, innerRadius, innerPaint);
         drawFg(canvas);
     }
 
