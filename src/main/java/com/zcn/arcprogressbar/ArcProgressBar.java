@@ -8,6 +8,7 @@ import android.graphics.BlurMaskFilter;
 import android.graphics.BlurMaskFilter.Blur;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Paint.Style;
@@ -53,6 +54,10 @@ public class ArcProgressBar extends View {
     float bottom=420f;
     int progress = 3;
     int i = 0;
+
+    int[] colors;
+    Matrix mMatrix;
+
     //private float angleUnit = 180.0f / 256.0f;
     private float angleUnit  = arcAcrossAngle /maxProgress;;
     private RectF rect;
@@ -111,6 +116,7 @@ public class ArcProgressBar extends View {
     }
 
     private void init() {
+
         //背景Paint
         outerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         outerPaint.setStyle(Style.STROKE);
@@ -123,11 +129,8 @@ public class ArcProgressBar extends View {
         innerPaint = new Paint();
         innerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         innerPaint.setStyle(Paint.Style.FILL);
-        int[] colors = new int[]{Color.parseColor("#d2d3d2"),Color.parseColor("#6f6f6f"),Color.parseColor("#414242")};
-        Shader shader = new SweepGradient(160,160,colors,null);
-        innerPaint.setShader(shader);
-        BlurMaskFilter blurMaskFilter2 = new BlurMaskFilter(1, Blur.OUTER);
-        innerPaint.setMaskFilter(blurMaskFilter2);
+        colors = new int[]{Color.GREEN,Color.BLUE,Color.RED,Color.BLUE,Color.GREEN};
+        mMatrix = new Matrix();
 
         //前景Paint
         fgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -188,6 +191,14 @@ public class ArcProgressBar extends View {
 		 * false  不画中心和弧线的连线
 		 */
         canvas.drawCircle(cx, cy, outerRadius, outerPaint);
+
+        Shader shader = new SweepGradient(cx,cy,colors,null);
+        mMatrix.setRotate((float)degree, cx, cy);
+        shader.setLocalMatrix(mMatrix);
+        innerPaint.setShader(shader);
+        BlurMaskFilter blurMaskFilter2 = new BlurMaskFilter(1, Blur.OUTER);
+        innerPaint.setMaskFilter(blurMaskFilter2);
+
         canvas.drawCircle(cx, cy, innerRadius, innerPaint);
         drawFg(canvas);
     }
@@ -213,6 +224,7 @@ public class ArcProgressBar extends View {
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                Log.d("Chunna.zheng","=====ACTION_DOWN=====");
                 x = event.getX();
                 y = event.getY();
 
@@ -231,6 +243,7 @@ public class ArcProgressBar extends View {
                 break;
 
             case MotionEvent.ACTION_MOVE:
+                Log.d("Chunna.zheng","=====ACTION_MOVE=====");
                 x=event.getX();
                 y = event.getY();
                 if(!(x>=left&&x<=right&&y>=top&&y<=(top+outerRadius))){
@@ -248,6 +261,7 @@ public class ArcProgressBar extends View {
                 invalidate();
                 break;
             case MotionEvent.ACTION_UP:
+                Log.d("Chunna.zheng","=====ACTION_UP=====");
                 break;
         }
 
