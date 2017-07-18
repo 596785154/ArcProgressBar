@@ -4,6 +4,8 @@ package com.zcn.arcprogressbar;
  * Created by Administrator on 2017/6/28.
  */
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.BlurMaskFilter;
 import android.graphics.BlurMaskFilter.Blur;
 import android.graphics.Canvas;
@@ -31,7 +33,7 @@ public class ArcProgressBar extends View {
     private float startAngle = 135.0f;//弧度开始点
     private float sweepAngle = 225.0f;
     private float arcAcrossAngle = 270.0f;//整个弧度跨越的度数
-    private float bgThickness = 30;//北京弧形条的厚度，即bgPaint的粗度
+    private float bgThickness = 30;//背景弧形条的厚度，即bgPaint的粗度
     private float fgThickness = 26;
     /** The width of the view */
     private int width;
@@ -57,6 +59,8 @@ public class ArcProgressBar extends View {
 
     int[] colors;
     Matrix mMatrix;
+    private double markerPointX;
+    private double markerPointY;
 
     //private float angleUnit = 180.0f / 256.0f;
     private float angleUnit  = arcAcrossAngle /maxProgress;;
@@ -64,21 +68,25 @@ public class ArcProgressBar extends View {
     public Point centerPoint = null;//弧形的圆心点
     //public float radius = 0;//弧形的半径
     public double degree;//当前的进度所对应的角度
+    private Context context ;
 
     private Handler handler;
 
     public ArcProgressBar(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        this.context = context;
         init();
     }
 
     public ArcProgressBar(Context context, AttributeSet attrs) {
         super(context, attrs);
+        this.context = context;
         init();
     }
 
     public ArcProgressBar(Context context) {
         super(context);
+        this.context = context;
         init();
     }
 
@@ -116,7 +124,6 @@ public class ArcProgressBar extends View {
     }
 
     private void init() {
-
         //背景Paint
         outerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         outerPaint.setStyle(Style.STROKE);
@@ -172,6 +179,10 @@ public class ArcProgressBar extends View {
         //在此矩形中画弧形进度条
         rect = new RectF(left, top, right, bottom);
         centerPoint = new Point((int)cx, (int)cy);
+
+        markerPointX = cx + outerRadius * Math.cos((progress*angleUnit+startAngle) * 3.14 / 180);
+        markerPointY = cy + outerRadius * Math.sin((progress*angleUnit+startAngle) * 3.14 / 180);
+
     }
 
     @Override
@@ -193,7 +204,7 @@ public class ArcProgressBar extends View {
         canvas.drawCircle(cx, cy, outerRadius, outerPaint);
 
         Shader shader = new SweepGradient(cx,cy,colors,null);
-        mMatrix.setRotate((float)degree, cx, cy);
+        mMatrix.setRotate((float) degree, cx, cy);
         shader.setLocalMatrix(mMatrix);
         innerPaint.setShader(shader);
         BlurMaskFilter blurMaskFilter2 = new BlurMaskFilter(1, Blur.OUTER);
@@ -201,6 +212,7 @@ public class ArcProgressBar extends View {
 
         canvas.drawCircle(cx, cy, innerRadius, innerPaint);
         drawFg(canvas);
+        canvas.drawCircle((float)markerPointX,(float)markerPointY, 20, innerPaint);
     }
 
     /**
@@ -208,10 +220,7 @@ public class ArcProgressBar extends View {
      * @param canvas
      */
     private void drawFg(Canvas canvas) {
-        //Log.d(TAG, "开始绘画了");
         for(i=0;i< progress;i++){
-            //Log.d(TAG, "进入循环体："+i);
-            //fgPaint.setColor(Color.rgb(i, 256 - i, 0));
             canvas.drawArc(rect, startAngle + angleUnit * i, angleUnit, false, fgPaint);
         }
     }
@@ -224,7 +233,6 @@ public class ArcProgressBar extends View {
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                Log.d("Chunna.zheng","=====ACTION_DOWN=====");
                 x = event.getX();
                 y = event.getY();
 
@@ -243,7 +251,6 @@ public class ArcProgressBar extends View {
                 break;
 
             case MotionEvent.ACTION_MOVE:
-                Log.d("Chunna.zheng","=====ACTION_MOVE=====");
                 x=event.getX();
                 y = event.getY();
                 if(!(x>=left&&x<=right&&y>=top&&y<=(top+outerRadius))){
@@ -252,16 +259,20 @@ public class ArcProgressBar extends View {
 
                 degree = Math.toDegrees(Math.atan((y - centerPoint.y)
                         / (x - centerPoint.x)));
-
                 if(degree>=0){
                     progress =(int) Math.round(degree/angleUnit);
+                    markerPointX = cx + outerRadius * Math.cos((progress*angleUnit+startAngle) * 3.14 / 180);
+                    markerPointY = cy + outerRadius * Math.sin((progress*angleUnit+startAngle) * 3.14 / 180);
                 }else{
                     progress = (int) Math.round((arcAcrossAngle +degree)/angleUnit);
+                    markerPointX = cx + outerRadius * Math.cos((progress*angleUnit+startAngle) * 3.14 / 180);
+                    markerPointY = cy + outerRadius * Math.sin((progress*angleUnit+startAngle) * 3.14 / 180);
                 }
+
                 invalidate();
                 break;
             case MotionEvent.ACTION_UP:
-                Log.d("Chunna.zheng","=====ACTION_UP=====");
+                Log.d("Chunna.zheng", "=====ACTION_UP=====");
                 break;
         }
 
