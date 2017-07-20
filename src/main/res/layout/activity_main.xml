@@ -1,21 +1,16 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
     <com.zcn.arcprogressbar.ArcProgressBar
+        xmlns:app ="http://schemas.android.com/apk/res/com.zcn.arcprogressbar"
         android:id="@+id/arcProgressBar"
         android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:visibility="visible">
+        android:layout_gravity="center"
+        app:arc_color = "#3a96e9"
+        app:back_color = "#373737"
+        android:layout_height="200dp">
     </com.zcn.arcprogressbar.ArcProgressBar>
-    <!--<com.sdkj.myapplication.MySeekBar
-        android:id="@+id/seekBar"
-        android:layout_below="@+id/arcProgressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="visible">
-    </com.sdkj.myapplication.MySeekBar>-->
-
-
-</RelativeLayout>
+</FrameLayout>
